@@ -98,4 +98,4 @@ export default class CartManager {
 
     return updateArray[indexOfCartItemToUpdate];
   }
-}   
+}
