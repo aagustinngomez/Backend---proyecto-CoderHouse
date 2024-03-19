@@ -14,16 +14,18 @@ export default class ProductRouter {
     // Get products
     this.router.get(`${this.path}`, async (req, res) => {
       try {
-        const { limit } = req.query;
-        const products = await this.productManager.getAllProducts(limit);
+        const { limit, page, sort, query } = req.query;
+        const products = await this.productManager.getAllProducts(limit, page, sort, query, req.baseUrl);
         res.status(200);
-        res.send(products);
+        res.send({
+          ...products,
+          status: "success",
+        });
         return;
-      } catch (error) {
-        res.status(500);
-        res.send(error);
+      } catch ({ message }) {
+        res.status(500).send({ status: "error", payload: message });
+        return;
       }
-      return;
     });
 
     //Get product by ID

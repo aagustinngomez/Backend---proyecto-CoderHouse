@@ -1,14 +1,16 @@
 import express from "express";
 import handlebars from "express-handlebars";
 import displayRoutes from "express-routemap";
+import MongoStore from "connect-mongo";
 import cors from "cors";
 import { Server } from "socket.io";
 import __dirname from "./utils.js";
 import { mongoDBConnection } from "./db/mongo.config.js";
 import { getBaseConfiguration } from "./config/getBaseConfiguration.js";
 import MessagesManagerDao from "./dao/managers/messagesManager.managers.js";
+import session from "express-session";
 
-const { API_VERSION, CURSO, PORT, NODE_ENV } = getBaseConfiguration();
+const { API_VERSION, CURSO, PORT, NODE_ENV, SIGNING_SECRET, DB_CNN, DB_NAME } = getBaseConfiguration();
 
 export default class App {
   app;
@@ -48,6 +50,19 @@ export default class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.static(`${__dirname}/public`));
+    this.app.use(
+      session({
+        store: MongoStore.create({
+          mongoUrl: DB_CNN,
+          mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+          ttl: 60 * 15, //15 minutos
+          dbName: DB_NAME,
+        }),
+        secret: SIGNING_SECRET,
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
   }
 
   initializeRoutes(routes) {
@@ -104,5 +119,12 @@ export default class App {
     );
     this.app.set("views", `${__dirname}/views`);
     this.app.set("view engine", "handlebars");
+    this.app.use(
+      session({
+        secret: "coderSecret",
+        resave: true,
+        saveUninitialized: true,
+      })
+    );
   }
 }
