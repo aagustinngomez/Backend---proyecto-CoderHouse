@@ -1,4 +1,3 @@
-
 const createCart = async () => {
   const response = await fetch(`/api/v1/cart`, { method: "POST" });
   const data = await response.json();
