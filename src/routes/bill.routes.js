@@ -3,6 +3,8 @@ import BillManagerDao from "../dao/managers/billManager.managers.js";
 import { passportCall } from "../utils/jwt.js";
 import { authorization } from "../middleware/authorization.middleware.js";
 import CartManagerDao from "../dao/managers/cartManager.managers.js";
+import { ClientError } from "../utils/ClientError.js";
+import { ErrorCode } from "../utils/ErrorCode.js";
 
 export default class BillRouter {
   path = "/bill";
@@ -16,25 +18,13 @@ export default class BillRouter {
 
   initBillRoutes() {
     //Get bill by ID
-    this.router.get(`${this.path}/:bid`, [passportCall("jwt"), authorization("USER")], async (req, res) => {
+    this.router.get(`${this.path}/:bid`, [passportCall("jwt"), authorization(["ADMIN", "USER"])], async (req, res) => {
       try {
         const billId = req.params.bid;
         const billItems = await this.billManager.getBillById(billId);
         res.status(200).send({ status: "success", payload: billItems });
-      } catch ({ message }) {
-        res.status(500).send({ status: "error", payload: message });
-      }
-    });
-
-    //Post to create a new bill
-    this.router.post(`${this.path}`, [passportCall("jwt"), authorization("USER")], async (req, res) => {
-      try {
-        const [cart] = await this.cartManager.getCart(req.user.userId);
-        const newBill = await this.billManager.createBill(cart);
-
-        res.status(200).send({ status: "success", payload: newBill });
-      } catch ({ message }) {
-        res.status(500).send({ status: "error", payload: message });
+      } catch (error) {
+        next(error);
       }
     });
   }

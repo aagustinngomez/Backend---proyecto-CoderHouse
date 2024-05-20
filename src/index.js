@@ -1,4 +1,3 @@
-
 import App from "./app.js";
 import CartRouter from "./routes/cart.routes.js";
 import ProductRouter from "./routes/product.routes.js";
