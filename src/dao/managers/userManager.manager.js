@@ -1,4 +1,3 @@
-
 import { createHash, isValidPassword } from "../../utils/encrypt.js";
 import { userModel } from "../models/userModel.models.js";
 

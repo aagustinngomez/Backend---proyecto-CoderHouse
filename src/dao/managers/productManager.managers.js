@@ -1,4 +1,3 @@
-
 import { faker } from "@faker-js/faker";
 import { productModel } from "../models/productModel.models.js";
 import { ClientError } from "../../utils/ClientError.js";
