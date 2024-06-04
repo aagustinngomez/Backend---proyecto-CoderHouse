@@ -1,18 +1,23 @@
+
 import express from "express";
 import passport from "passport";
 import handlebars from "express-handlebars";
 import displayRoutes from "express-routemap";
 import cookieParser from "cookie-parser";
-import MongoStore from "connect-mongo";
+import swaggerUiExpress from "swagger-ui-express";
 import cors from "cors";
 import { Server } from "socket.io";
 import __dirname from "./utils.js";
-import { mongoDBConnection } from "./db/mongo.config.js";
+import { mongoDBConnection } from "./services/mongo.config.js";
 import config from "./config/config.js";
 import MessagesManagerDao from "./dao/managers/messagesManager.managers.js";
 import initializePassport from "./config/passport.config.js";
+import { ErrorHandler } from "./middleware/ErrorHandler.middleware.js";
+import { addLogger, getLogger } from "./utils/logger.js";
+import swaggerSpecs from "./services/swaggerService.js";
+import { addHeaders } from "./middleware/addHeaders.middleware.js";
 
-const { API_VERSION, CURSO, PORT, NODE_ENV, SIGNING_SECRET, DB_CNN, DB_NAME } = config;
+const { API_VERSION, CURSO, PORT, NODE_ENV } = config;
 
 export default class App {
   app;
@@ -22,6 +27,7 @@ export default class App {
   apiRoutes;
   viewRoutes;
   messagesManager;
+  logger;
 
   constructor(apiRoutes, viewRoutes) {
     this.app = express();
@@ -33,6 +39,7 @@ export default class App {
     this.connectDB();
     this.initHandlebars();
     this.messagesManager = new MessagesManagerDao();
+    this.logger = getLogger();
   }
 
   getServer() {
@@ -50,11 +57,13 @@ export default class App {
   }
 
   initializeMiddlewares() {
+    this.app.use(addLogger);
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
     this.app.use(express.static(`${__dirname}/public`));
+    this.app.use(addHeaders);
     initializePassport();
     this.app.use(passport.initialize());
   }
@@ -65,6 +74,22 @@ export default class App {
     });
     viewRoutes.forEach((route) => {
       this.app.use(`/`, route.router);
+    });
+
+    this.app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(swaggerSpecs));
+
+    this.app.get(`/loggerTest`, (req, res) => {
+      try {
+        req.logger.fatal("Testing fatal message");
+        req.logger.error("Testing error message");
+        req.logger.warning("Testing warning message");
+        req.logger.info("Testing info message");
+        req.logger.http("Testing http message");
+        req.logger.debug("Testing debug message");
+        res.send("All logs have been triggered ");
+      } catch (error) {
+        res.logger.error(error);
+      }
     });
   }
 
@@ -94,14 +119,14 @@ export default class App {
   listen() {
     const server = this.app.listen(this.port, () => {
       displayRoutes(this.app);
-      console.log(`=================================`);
-      console.log(`======= COURSE: ${CURSO} ======`);
-      console.log(`======= ENV: ${this.env} =======`);
-      console.log(`=================================`);
+      this.logger.info(`COURSE: ${CURSO}`);
+      this.logger.info(`ENV: ${this.env}`);
+      this.logger.info(`PORT: ${this.port}`);
     });
 
     this.initializeWebChat(server);
     this.initializeRoutes(this.apiRoutes, this.viewRoutes);
+    this.app.use(ErrorHandler);
   }
 
   initHandlebars() {

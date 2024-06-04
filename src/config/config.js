@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
+
 dotenv.config({
-  path: `.env.${process.env.NODE_ENV || "dev"}.local`,
+  path: `.env.${process.env.NODE_ENV || "desarrollo"}.local`,
 });
 
 const {
@@ -16,6 +17,10 @@ const {
   GITHUB_CLIENT_ID,
   GITHUB_CALLBACK_URL,
   API_URL,
+  LOG_LEVEL_CONSOLE,
+  LOG_LEVEL_FILE,
+  EMAIL_ADDRESS,
+  EMAIL_SECRET,
 } = process.env;
 
 export default {
@@ -31,4 +36,8 @@ export default {
   GITHUB_CLIENT_ID,
   GITHUB_CALLBACK_URL,
   API_URL,
+  LOG_LEVEL_CONSOLE,
+  LOG_LEVEL_FILE,
+  EMAIL_ADDRESS,
+  EMAIL_SECRET,
 };
