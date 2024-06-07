@@ -3,9 +3,14 @@ import BillManagerDao from "../dao/managers/billManager.managers.js";
 import { passportCall } from "../utils/jwt.js";
 import { authorization } from "../middleware/authorization.middleware.js";
 import CartManagerDao from "../dao/managers/cartManager.managers.js";
+<<<<<<< HEAD
 import { RoleType } from "../constant/role.js";
 import stripe from "../services/paymentService.js";
 import config from "../config/config.js";
+=======
+import { ClientError } from "../utils/ClientError.js";
+import { ErrorCode } from "../utils/ErrorCode.js";
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 
 export default class BillRouter {
   path = "/bill";
@@ -19,6 +24,7 @@ export default class BillRouter {
 
   initBillRoutes() {
     //Get bill by ID
+<<<<<<< HEAD
     this.router.get(
       `${this.path}/:bid`,
       [passportCall("jwt"), authorization([RoleType.ADMIN, RoleType.USER, RoleType.PREMIUM])],
@@ -96,6 +102,13 @@ export default class BillRouter {
         await this.billManager.cancelCheckout(billId);
 
         res.redirect(303, `${API_URL}/views/cancelled`);
+=======
+    this.router.get(`${this.path}/:bid`, [passportCall("jwt"), authorization(["ADMIN", "USER"])], async (req, res) => {
+      try {
+        const billId = req.params.bid;
+        const billItems = await this.billManager.getBillById(billId);
+        res.status(200).send({ status: "success", payload: billItems });
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
       } catch (error) {
         next(error);
       }

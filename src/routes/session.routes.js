@@ -42,6 +42,7 @@ export default class SessionRouter {
     });
 
     // Get logout
+<<<<<<< HEAD
     this.router.get(
       `${this.path}/logout`,
       [passportCall("jwt"), authorization([RoleType.ADMIN, RoleType.USER, RoleType.PREMIUM])],
@@ -61,6 +62,11 @@ export default class SessionRouter {
         const userId = req.params.uid;
         await this.userManager.removeUser(userId);
         return res.status(204).send();
+=======
+    this.router.get(`${this.path}/logout`, async (req, res, next) => {
+      try {
+        res.clearCookie("eCommerceCookieToken").send();
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
       } catch (error) {
         next(error);
       }
@@ -90,7 +96,11 @@ export default class SessionRouter {
         req.user = { ...signUser };
         res.cookie("eCommerceCookieToken", token, { maxAge: 1000 * 60 * 30, httpOnly: true });
 
+<<<<<<< HEAD
         return res.status(204).send();
+=======
+        return res.status(204);
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
       } catch (error) {
         next(error);
       }
@@ -133,6 +143,7 @@ export default class SessionRouter {
     );
 
     // Get session
+<<<<<<< HEAD
     this.router.get(
       `${this.path}`,
       [passportCall("jwt"), authorization([RoleType.ADMIN, RoleType.USER, RoleType.PREMIUM])],
@@ -198,6 +209,11 @@ export default class SessionRouter {
         res.cookie("eCommerceCookieToken", newAccessToken, { maxAge: 1000 * 60 * 30, httpOnly: true });
 
         return res.status(204).send();
+=======
+    this.router.get(`${this.path}`, [passportCall("jwt"), authorization(["ADMIN", "USER"])], async (req, res, next) => {
+      try {
+        return res.status(200).json(req.user);
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
       } catch (error) {
         next(error);
       }

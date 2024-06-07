@@ -4,7 +4,10 @@ import passport from "passport";
 import handlebars from "express-handlebars";
 import displayRoutes from "express-routemap";
 import cookieParser from "cookie-parser";
+<<<<<<< HEAD
 import swaggerUiExpress from "swagger-ui-express";
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 import cors from "cors";
 import { Server } from "socket.io";
 import __dirname from "./utils.js";
@@ -14,8 +17,11 @@ import MessagesManagerDao from "./dao/managers/messagesManager.managers.js";
 import initializePassport from "./config/passport.config.js";
 import { ErrorHandler } from "./middleware/ErrorHandler.middleware.js";
 import { addLogger, getLogger } from "./utils/logger.js";
+<<<<<<< HEAD
 import swaggerSpecs from "./services/swaggerService.js";
 import { addHeaders } from "./middleware/addHeaders.middleware.js";
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 
 const { API_VERSION, CURSO, PORT, NODE_ENV } = config;
 
@@ -76,8 +82,11 @@ export default class App {
       this.app.use(`/`, route.router);
     });
 
+<<<<<<< HEAD
     this.app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(swaggerSpecs));
 
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
     this.app.get(`/loggerTest`, (req, res) => {
       try {
         req.logger.fatal("Testing fatal message");

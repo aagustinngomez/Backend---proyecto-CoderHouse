@@ -4,7 +4,10 @@ import CartManagerDao from "../dao/managers/cartManager.managers.js";
 import { authorization } from "../middleware/authorization.middleware.js";
 import { passportCall } from "../utils/jwt.js";
 import BillManagerDao from "../dao/managers/billManager.managers.js";
+<<<<<<< HEAD
 import { RoleType } from "../constant/role.js";
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 
 export default class ViewsRouter {
   path = "/views";
@@ -31,6 +34,7 @@ export default class ViewsRouter {
       }
     });
 
+<<<<<<< HEAD
     this.router.get(`${this.path}/success`, async (req, res, next) => {
       try {
         res.render("success");
@@ -104,6 +108,61 @@ export default class ViewsRouter {
       }
     );
 
+=======
+    this.router.get(
+      `${this.path}/products/:pn`,
+      [passportCall("jwt"), authorization(["ADMIN", "USER"])],
+      async (req, res, next) => {
+        try {
+          let pageNumber = req.params.pn;
+          if (pageNumber) {
+            pageNumber = Number(pageNumber);
+          }
+
+          const data = await this.productManager.getAllProducts(
+            undefined,
+            pageNumber,
+            undefined,
+            undefined,
+            req.baseUrl
+          );
+
+          // dejo esto aca comentado para probar los fake products
+
+          // const data = await this.productManager.getAllFakeProducts(
+          //   undefined,
+          //   pageNumber,
+          //   undefined,
+          //   undefined,
+          //   req.baseUrl
+          // );
+
+          res.render("products", { data, style: "products.css" });
+        } catch (error) {
+          next(error);
+        }
+      }
+    );
+
+    this.router.get(
+      `${this.path}/bill/:id`,
+      [passportCall("jwt"), authorization(["ADMIN", "USER"])],
+      async (req, res, next) => {
+        try {
+          const billId = req.params.id;
+          const data = await this.billManager.getBillById(billId);
+          res.render("bill", { data, style: "bill.css" });
+        } catch (error) {
+          next(error);
+        }
+      }
+    );
+
+    this.router.get(`${this.path}/cart`, [passportCall("jwt"), authorization(["ADMIN", "USER"])], (req, res) => {
+      res.render("cart", { style: "products.css" });
+    });
+
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
     this.router.get(`${this.path}/realtimeproducts`, async (req, res, next) => {
       try {
         const products = await this.productManager.getAllProducts();
@@ -121,6 +180,7 @@ export default class ViewsRouter {
       res.render("register");
     });
 
+<<<<<<< HEAD
     this.router.get("/recover/:token", (req, res) => {
       const { token } = req.params;
       res.render("recover", { style: "recover.css", token });
@@ -139,5 +199,20 @@ export default class ViewsRouter {
         });
       }
     );
+=======
+    this.router.get("/recover", (req, res) => {
+      res.render("recover", { style: "recover.css" });
+    });
+
+    this.router.get("/profile", [passportCall("jwt"), authorization(["ADMIN", "USER"])], (req, res) => {
+      const user = req.user;
+      res.render("profile", {
+        user,
+        cart: {
+          cartId: "_id",
+        },
+      });
+    });
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
   }
 }

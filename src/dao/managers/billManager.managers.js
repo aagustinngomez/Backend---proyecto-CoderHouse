@@ -4,7 +4,10 @@ import CartManagerDao from "./cartManager.managers.js";
 import ProductManagerDao from "./productManager.managers.js";
 import { ClientError } from "../../utils/ClientError.js";
 import { ErrorCode } from "../../utils/ErrorCode.js";
+<<<<<<< HEAD
 import { BillStatus } from "../../utils/BillStatus.js";
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 
 export default class BillManagerDao {
   cartManager;
@@ -55,6 +58,7 @@ export default class BillManagerDao {
     }
   }
 
+<<<<<<< HEAD
   async generateTransactionId(billId) {
     const transactionId = crypto.randomBytes(16).toString("hex");
     await billModel.updateOne({ _id: billId }, { transactionId });
@@ -91,6 +95,8 @@ export default class BillManagerDao {
     return;
   }
 
+=======
+>>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
   getBillById = async (id) => {
     try {
       const bill = await billModel.findOne({ _id: id }).populate(["products.product", "user"]);
