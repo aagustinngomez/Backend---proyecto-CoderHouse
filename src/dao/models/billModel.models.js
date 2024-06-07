@@ -1,8 +1,5 @@
+
 import mongoose, { Schema } from "mongoose";
-<<<<<<< HEAD
-import { BillStatus } from "../../utils/BillStatus.js";
-=======
->>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 
 const billCollection = "bill";
 
@@ -25,18 +22,6 @@ const billSchema = new Schema({
     type: Schema.Types.Number,
     required: true,
   },
-<<<<<<< HEAD
-  transactionId: {
-    type: Schema.Types.String,
-  },
-  status: {
-    type: Schema.Types.String,
-    required: true,
-    default: BillStatus.NotPaid,
-    enum: Object.values(BillStatus),
-  },
-=======
->>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
   products: {
     type: [
       {

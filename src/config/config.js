@@ -19,11 +19,8 @@ const {
   API_URL,
   LOG_LEVEL_CONSOLE,
   LOG_LEVEL_FILE,
-<<<<<<< HEAD
   EMAIL_ADDRESS,
   EMAIL_SECRET,
-=======
->>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 } = process.env;
 
 export default {
@@ -41,9 +38,6 @@ export default {
   API_URL,
   LOG_LEVEL_CONSOLE,
   LOG_LEVEL_FILE,
-<<<<<<< HEAD
   EMAIL_ADDRESS,
   EMAIL_SECRET,
-=======
->>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
 };

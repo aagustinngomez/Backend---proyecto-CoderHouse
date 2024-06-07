@@ -1,4 +1,3 @@
-
 import { promises as fs } from "fs";
 import { getLogger } from "./utils/logger.js";
 

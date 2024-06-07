@@ -132,30 +132,6 @@ export default class ProductManagerDao {
         throw error;
       }
       throw new ClientError("ProductManagerDao.updateProduct", ErrorCode.DB_ISSUE);
-<<<<<<< HEAD
-=======
-    }
-  }
-
-  async changeStockForProduct(productId, quantity) {
-    try {
-      if (!quantity || !productId) {
-        throw new ClientError(
-          "ProductManagerDao.addProduct",
-          ErrorCode.BAD_PARAMETERS,
-          400,
-          "BAD PARAM",
-          "productId and quantity are required"
-        );
-      }
-
-      await productModel.updateOne({ _id: productId }, { $inc: { stock: quantity } });
-    } catch (error) {
-      if (error.code) {
-        throw error;
-      }
-      throw new ClientError("ProductManagerDao.changeStockForProduct", ErrorCode.DB_ISSUE);
->>>>>>> dd7f0b44ac9e7a4d03f800e1077442c7e1e81176
     }
   }
 
