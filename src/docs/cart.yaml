@@ -1,3 +1,4 @@
+
 paths:
   /api/v1/cart:
     get:

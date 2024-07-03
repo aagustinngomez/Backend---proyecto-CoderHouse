@@ -141,4 +141,4 @@ export default class UserManagerDao {
       throw new ClientError("UserManagerDao.getUserById", ErrorCode.DB_ISSUE);
     }
   };
-}
+} 
