@@ -1,4 +1,3 @@
-
 import { ErrorCode } from "../utils/ErrorCode.js";
 
 export const ErrorHandler = (error, req, res, next) => {

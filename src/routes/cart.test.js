@@ -50,4 +50,4 @@ describe("Cart endpoint testing", () => {
       expect(statusCode).to.equal(204);
     });
   });
-}); 
+});
