@@ -1,5 +1,5 @@
 import passport from "passport";
-import GitHubStrategy from "passport-github2";
+import { Strategy as GitHubStrategy } from "passport-github2";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import UserManagerDao from "../dao/managers/userManager.manager.js";
 import config from "../config/config.js";
@@ -12,8 +12,8 @@ const { GITHUB_CLIENT_ID, GITHUB_SECRET, GITHUB_CALLBACK_URL, SIGNING_SECRET, AP
 
 const initializePassport = () => {
   const userManager = new UserManagerDao();
+
   passport.use(
-    "github",
     new GitHubStrategy(
       {
         clientID: GITHUB_CLIENT_ID,
@@ -22,17 +22,19 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const user = await userManager.getUserByEmail(profile._json.email || profile._json.login);
+          const email = profile._json.email || profile._json.login;
+          let user = await userManager.getUserByEmail(email);
+
           if (!user) {
-            const newUser = await userManager.createUser({
-              email: profile._json.email || profile._json.login,
+            user = await userManager.createUser({
+              email: email,
               firstName: profile._json.name,
               lastName: "",
               password: "",
               age: 0,
             });
-            return done(null, newUser);
           }
+
           return done(null, user);
         } catch (error) {
           return done(error);
@@ -42,7 +44,6 @@ const initializePassport = () => {
   );
 
   passport.use(
-    "jwt",
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
@@ -51,20 +52,22 @@ const initializePassport = () => {
       },
       async (jwtPayload, done) => {
         try {
-          if (!(jwtPayload.user && jwtPayload.user.email && jwtPayload.user.role)) {
+          const { user } = jwtPayload;
+
+          if (!user || !user.email || !user.role) {
             throw new ClientError(
               "passport",
               ErrorCode.BAD_PARAMETERS,
               400,
               "bad request structure",
-              "The payload need to include user with an email and role"
+              "The payload needs to include user with an email and role"
             );
           }
 
-          const user = await userManager.getUserByEmail(jwtPayload.user.email);
+          const userData = await userManager.getUserByEmail(user.email);
 
-          if (user && AvailableRoles.includes(jwtPayload.user.role)) {
-            return done(null, user);
+          if (userData && AvailableRoles.includes(user.role)) {
+            return done(null, userData);
           }
 
           return done(null, false);
@@ -80,9 +83,9 @@ const initializePassport = () => {
   });
 
   passport.deserializeUser(async (serUser, done) => {
-    let user = await userManager.getUserByEmail(serUser.email);
+    const user = await userManager.getUserByEmail(serUser.email);
     done(null, user);
   });
 };
-
+console.log(config);  // Añade esto justo después de importar el config
 export default initializePassport;

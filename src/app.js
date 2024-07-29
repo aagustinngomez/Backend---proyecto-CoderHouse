@@ -19,40 +19,29 @@ import { addHeaders } from "./middleware/addHeaders.middleware.js";
 const { API_VERSION, CURSO, PORT, NODE_ENV } = config;
 
 export default class App {
-  app;
-  env;
-  port;
-  server;
-  apiRoutes;
-  viewRoutes;
-  messagesManager;
-  logger;
-
   constructor(apiRoutes, viewRoutes) {
     this.app = express();
     this.port = PORT || 8000;
     this.env = NODE_ENV;
-    this.initializeMiddlewares();
     this.apiRoutes = apiRoutes;
     this.viewRoutes = viewRoutes;
-    this.connectDB();
-    this.initHandlebars();
     this.messagesManager = new MessagesManagerDao();
     this.logger = getLogger();
-  }
 
-  getServer() {
-    return this.app;
-  }
-
-  closeServer(done) {
-    this.server = this.app.listen(this.port, () => {
-      done();
-    });
+    this.initializeMiddlewares();
+    this.connectDB();
+    this.initHandlebars();
+    this.initializeRoutes(apiRoutes, viewRoutes);
   }
 
   async connectDB() {
-    await mongoDBConnection();
+    try {
+      await mongoDBConnection();
+      this.logger.info("Connected to MongoDB");
+    } catch (error) {
+      this.logger.error("Failed to connect to MongoDB", error);
+      process.exit(1); // Exit the process if DB connection fails
+    }
   }
 
   initializeMiddlewares() {
@@ -85,9 +74,9 @@ export default class App {
         req.logger.info("Testing info message");
         req.logger.http("Testing http message");
         req.logger.debug("Testing debug message");
-        res.send("All logs have been triggered ");
+        res.send("All logs have been triggered");
       } catch (error) {
-        res.logger.error(error);
+        req.logger.error(error); // Changed from res.logger.error(error)
       }
     });
   }
@@ -109,22 +98,21 @@ export default class App {
     });
 
     // Make io accessible to our router
-    this.app.use(function (req, res, next) {
+    this.app.use((req, res, next) => {
       req.io = io;
       next();
     });
   }
 
   listen() {
-    const server = this.app.listen(this.port, () => {
+    this.server = this.app.listen(this.port, () => {
       displayRoutes(this.app);
       this.logger.info(`COURSE: ${CURSO}`);
       this.logger.info(`ENV: ${this.env}`);
       this.logger.info(`PORT: ${this.port}`);
     });
 
-    this.initializeWebChat(server);
-    this.initializeRoutes(this.apiRoutes, this.viewRoutes);
+    this.initializeWebChat(this.server);
     this.app.use(ErrorHandler);
   }
 
