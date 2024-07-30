@@ -1,11 +1,12 @@
-import fs from "fs";
-import path from "path";
-import { unlink, rename } from "fs/promises";
-import UserManagerDao from "../dao/managers/userManager.manager.js";
-import { ClientError } from "../utils/ClientError.js";
-import { ErrorCode } from "../utils/ErrorCode.js";
-import getFolderNameFromFileType from "../utils/getFolderNameFromFileType.js";
-import { FileTypes } from "../utils/FileTypes.js";
+import fs from 'fs';
+import path from 'path';
+import UserManagerDao from '../dao/managers/userManager.manager.js';
+import { ClientError } from '../utils/ClientError.js';
+import { ErrorCode } from '../utils/ErrorCode.js';
+import { RoleType } from '../constant/role.js';
+import { rename, unlink } from 'fs/promises';
+import getFolderNameFromFileType from '../utils/getFolderNameFromFileType.js';
+import { FileTypes } from '../utils/FileTypes.js';
 
 export default class UserController {
   constructor() {
@@ -16,11 +17,11 @@ export default class UserController {
     try {
       if (!req.files || !req.body?.type) {
         throw new ClientError(
-          "UserController.uploadDocuments",
+          'UserController.uploadDocuments',
           ErrorCode.BAD_PARAMETERS,
           400,
-          "Document could not be loaded",
-          "Document could not load"
+          'Document could not be loaded',
+          'Document could not load'
         );
       }
 
@@ -36,11 +37,11 @@ export default class UserController {
           await unlink(file.path);
         }
         throw new ClientError(
-          "UserController.uploadDocuments",
+          'UserController.uploadDocuments',
           ErrorCode.BAD_PARAMETERS,
           400,
-          "You can only upload user documents here",
-          "Wrong Endpoint"
+          'You can only upload user documents here',
+          'Wrong Endpoint'
         );
       }
 
@@ -50,14 +51,14 @@ export default class UserController {
         for (const file of req.files) {
           await unlink(file.path);
         }
-        throw new ClientError("UserController.uploadDocuments", ErrorCode.BAD_PARAMETERS, 400, "User not found", "User not found");
+        throw new ClientError('UserController.uploadDocuments', ErrorCode.BAD_PARAMETERS, 400, 'User not found', 'User not found');
       }
 
       if (req.user.role !== RoleType.ADMIN && user.userId !== userId) {
         for (const file of req.files) {
           await unlink(file.path);
         }
-        throw new ClientError("UserController.uploadDocuments", ErrorCode.UNAUTHORISED);
+        throw new ClientError('UserController.uploadDocuments', ErrorCode.UNAUTHORISED);
       }
 
       for (const file of req.files) {
@@ -73,8 +74,8 @@ export default class UserController {
   }
 
   async togglePremium(req, res, next) {
+    const userId = req.params.uid;
     try {
-      const userId = req.params.uid;
       await this.userManager.togglePremium(userId);
       return res.status(204).send();
     } catch (error) {
